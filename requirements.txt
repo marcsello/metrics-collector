@@ -1,0 +1,9 @@
+influxdb
+flask
+flask_classful
+flask_jwt_simple
+flask-influxdb
+marshmallow
+tzdata
+tzlocal
+pycrypto
