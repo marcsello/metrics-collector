@@ -6,4 +6,4 @@ flask-influxdb
 marshmallow
 tzdata
 tzlocal
-pycrypto
+cryptography
