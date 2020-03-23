@@ -71,6 +71,27 @@ class RecordView(FlaskView):
 
         return datapoints
 
+    @staticmethod
+    def _convert_netio_to_influx_datapoints(hostname: str, timestamp: str, netio: dict) -> list:
+
+        datapoints = []
+
+        for dev, stats in netio.items():
+            datapoints.append({
+                "measurement": "netio",
+                "time": timestamp,
+                "tags": {
+                    "host": hostname,
+                    "dev": dev
+                },
+                "fields": {
+                    "rx_rate_bytes": stats['rx_rate_bytes'],
+                    "tx_rate_bytes": stats['tx_rate_bytes']
+                }
+            })
+
+        return datapoints
+
     @jwt_required
     @json_required
     def post(self):
@@ -93,6 +114,9 @@ class RecordView(FlaskView):
 
         if 'filesystem' in record.keys():
             datapoints.extend(self._convert_filesystem_to_influx_datapoints(hostname, timestamp, record['filesystem']))
+
+        if 'netio' in record.keys():
+            datapoints.extend(self._convert_netio_to_influx_datapoints(hostname, timestamp, record['netio']))
 
         conn = self.influx_db.connection
         conn.write_points(datapoints)
